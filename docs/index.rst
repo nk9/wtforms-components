@@ -77,6 +77,54 @@ SelectField and SelectMultipleField support the following enhancements:
 
 .. _`optgroup`:
    https://developer.mozilla.org/en-US/docs/Web/HTML/Element/optgroup
+   
+Example of an optgroup:
+::
+    from wtforms import Form
+    from wtforms_components import SelectField
+    
+    groupedAnimals = (
+                        ('mammals', (
+                                        (1, 'honey badger'),
+                                        (2, 'aye-aye'),
+                                        (3, 'naked mole rat')
+                                    )),
+                        ('fish', (
+                                    (10, 'blobfish'),
+                                    (11, 'yumushi'),
+                                    (12, 'coelacanth')
+                                 )),
+                        ('birds', (
+                                    (20, 'flamingo'),
+                                    (21, 'shoebill'),
+                                    (22, 'potoo')
+                                  ))
+                     )
+    
+    class DocumentForm(Form):
+        animals = SelectField(choices=groupedAnimals)
+
+Or you can use a callable to populate the choices when the form is being built:
+::
+    from wtforms import Form
+    from wtforms_components import SelectField
+    import itertools
+
+    def groupedAnimals():
+        groupedAnimals = []
+        animals = [('bird', 1, 'potoo'), ('mammal', 2, 'aye-aye'), ('fish', 3, 'coelacanth'),
+                   ('fish', 4, 'blobfish'),  ('bird', 5, 'flamingo'), ('fish', 6, 'yumushi'),
+                   ('mammal', 7, 'honey badger'), ('mammal', 8, 'naked mole rat'), ('bird', 9, 'shoebill')]
+
+        animals.sort(key=lambda k: (k[0], k[2]))
+        for order, animal in itertools.groupby(animals, key=lambda k: k[0]):
+            groupedAnimals.append((order, tuple((a[1], a[2]) for a in animal)))
+
+        return groupedAnimals
+
+    class DocumentForm(Form):
+        animals = SelectField(choices=groupedAnimals())
+
 
 PhoneNumberField
 ----------------
